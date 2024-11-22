@@ -1,1 +1,4 @@
 /db/*
+/backend/www/.env
+/backend/www/vendor
+/backend/www/composer.lock
