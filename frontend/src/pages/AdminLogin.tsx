@@ -1,3 +1,25 @@
+/**
+ * The `AdminLogin` component serves as a page for creating the first admin account.
+ * It displays a centered layout with a form for admin account creation and basic branding.
+ *
+ * This component leverages the `AdminForm` component for form handling and rendering.
+ * It also includes static text elements to guide the user during the admin creation process.
+ *
+ * @component
+ * @example
+ *
+ * // To use the AdminLogin component as a page:
+ * import AdminLogin from "@/pages/AdminLogin";
+ *
+ * function App() {
+ *   return <AdminLogin />;
+ * }
+ *
+ * @requires AdminForm
+ *
+ * @since 0.0.1
+*/
+
 import AdminForm from "@/components/AdminForm";
 
 const AdminLogin: React.FC = () => {
