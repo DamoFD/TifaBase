@@ -106,9 +106,9 @@ const AdminForm: React.FC = () => {
                     name="email"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Email*</FormLabel>
+                            <FormLabel htmlFor="email">Email*</FormLabel>
                             <FormControl>
-                                <Input placeholder="example@gmail.com" {...field} autoComplete="email" />
+                                <Input id="email" placeholder="example@gmail.com" {...field} autoComplete="email" />
                             </FormControl>
                             <FormDescription>
                                 This will be your administrator email.
@@ -122,10 +122,11 @@ const AdminForm: React.FC = () => {
                     name="password"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Password*</FormLabel>
+                            <FormLabel htmlFor="password">Password*</FormLabel>
                             <FormControl>
                                 <div className="relative">
                                     <Input
+                                        id="password"
                                         type={showPassword ? "text" : "password"}
                                         autoComplete="new-password"
                                         {...field}
@@ -148,10 +149,11 @@ const AdminForm: React.FC = () => {
                     name="confirmPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Confirm Password*</FormLabel>
+                            <FormLabel htmlFor="confirmPassword">Confirm Password*</FormLabel>
                             <FormControl>
                                 <div className="relative">
                                     <Input
+                                        id="confirmPassword"
                                         type={showConfirmPassword ? "text" : "password"}
                                         autoComplete="new-password"
                                         {...field}
