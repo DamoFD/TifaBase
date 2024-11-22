@@ -3,7 +3,7 @@
     "description": "Open source backend as a service made with PHP.",
     "autoload": {
         "psr-4": {
-            "Tifabase\\": "src/"
+            "TifaBase\\": "src/"
         }
     },
     "authors": [
@@ -12,5 +12,7 @@
             "email": "voshall@yahoo.com"
         }
     ],
-    "require": {}
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
 }

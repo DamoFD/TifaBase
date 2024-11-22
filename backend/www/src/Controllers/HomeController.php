@@ -1,11 +1,16 @@
 <?php
 
-namespace Tifabase\Controllers;
+namespace TifaBase\Controllers;
+
+use TifaBase\Storage\Database;
 
 class HomeController
 {
     public function index()
     {
         echo 'Hello World';
+
+        $database = new Database();
+        var_dump($database->isConnected());
     }
 }
