@@ -1,0 +1,16 @@
+{
+    "name": "tifabase/tifabase",
+    "description": "Open source backend as a service made with PHP.",
+    "autoload": {
+        "psr-4": {
+            "Tifabase\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "DamoFD",
+            "email": "voshall@yahoo.com"
+        }
+    ],
+    "require": {}
+}
