@@ -11,7 +11,11 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
-use TifaBase\Controllers\HomeController;
+use TifaBase\Router\Router;
 
-$controller = new HomeController();
-$controller->index();
+$router = new Router();
+
+$httpMethod = $_SERVER['REQUEST_METHOD'];
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+$router->dispatch($httpMethod, $uri);
