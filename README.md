@@ -51,7 +51,7 @@ Here is a minimal example with Docker:
 
 3. Go to the root of the project and start the server with `docker compose up`.
 
-4. Run the migrations by going into the backend directory and executing the migration commands `cd backend/www` and `make migrate-up`.
+4. Run the migrations by going into the root directory and executing the migration command `make migrate-up`.
 
 5. Visit `localhost:5173` to view the frontend. PHPMyAdmin is available on `localhost:8080`
 
