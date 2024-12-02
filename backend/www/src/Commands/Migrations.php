@@ -4,13 +4,34 @@ namespace TifaBase\Commands;
 
 use TifaBase\Storage\Migrations\CreateUsersTable;
 
+/**
+* Class Migrations contains the migration commands
+*
+* @since 0.0.1
+*/
 class Migrations
 {
-    public function up() {
+    /**
+    * Migrate the database
+    *
+    * @return void
+    *
+    * @since 0.0.1
+    */
+    public function up(): void
+    {
         (new CreateUsersTable())->up();
     }
 
-    public function down() {
+    /**
+    * Rollback the database
+    *
+    * @return void
+    *
+    * @since 0.0.1
+    */
+    public function down(): void
+    {
         (new CreateUsersTable())->down();
     }
 }

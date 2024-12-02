@@ -5,17 +5,42 @@ namespace TifaBase\Storage\Migrations;
 use TifaBase\Storage\Database;
 use PDOException;
 
+/**
+* Class CreateUsersTable contains the migrations for the users table
+*
+* @since 0.0.1
+*/
 class CreateUsersTable
 {
 
+    /**
+    * Database instance
+    *
+    * @var Database
+    *
+    * @since 0.0.1
+    */
     private Database $db;
 
+    /**
+    * CreateUsersTable constructor
+    * Sets up the database instance
+    *
+    * @since 0.0.1
+    */
     public function __construct()
     {
         $this->db = new Database();
     }
 
-    public function up()
+    /**
+    * Migrate the database
+    *
+    * @return void
+    *
+    * @since 0.0.1
+    */
+    public function up(): void
     {
         $sql = "
             CREATE TABLE IF NOT EXISTS `users` (
@@ -34,7 +59,14 @@ class CreateUsersTable
         }
     }
 
-    public function down() 
+    /**
+    * Rollback the database
+    *
+    * @return void
+    *
+    * @since 0.0.1
+    */
+    public function down(): void
     {
         $sql = "DROP TABLE IF EXISTS `users`;";
 
