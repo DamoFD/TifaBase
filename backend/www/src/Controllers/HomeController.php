@@ -12,5 +12,6 @@ class HomeController
 
         $database = new Database();
         var_dump($database->isConnected());
+        phpinfo();
     }
 }
