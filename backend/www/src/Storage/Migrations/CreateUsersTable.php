@@ -12,7 +12,6 @@ use PDOException;
 */
 class CreateUsersTable
 {
-
     /**
     * Database instance
     *
