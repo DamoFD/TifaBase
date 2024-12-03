@@ -23,6 +23,7 @@ class Router
     * @since 0.0.1
     */
     private Dispatcher $dispatcher;
+    private array $routeMiddleware = [];
 
     /**
     * Router constructor
@@ -50,7 +51,10 @@ class Router
     {
         $router->addRoute(['POST'], '/api/v1/login', [UserController::class, 'login']);
         $router->addRoute(['POST'], '/api/v1/register', [UserController::class, 'register']);
-        $router->addRoute(['GET'], '/api/v1/@me', [UserController::class, 'me']);
+
+        $this->group(['middleware' => ['auth']], function ($groupRouter) use ($router) {
+            $groupRouter->addRoute($router, ['GET'], '/api/v1/@me', [UserController::class, 'me']);
+        });
     }
 
     /**
@@ -81,22 +85,68 @@ class Router
                 [$controller, $method] = $routeInfo[1];
                 $parameters = $routeInfo[2];
 
+                // Serialize the handler to match the stored key
+                $handlerKey = serialize($routeInfo[1]);
+
                 // Apply authentication middleware for protected routes
-                if ($this->isProtectedRoute($uri)) {
-                    $authMiddleware = new AuthMiddleware();
-                    $authMiddleware->handle();
-                }
+                $middlewares = $this->routeMiddleware[$handlerKey] ?? [];
+                $this->applyMiddleware($middlewares);
 
                 $this->handleRequest(new $controller(), $method, $parameters);
                 break;
         }
     }
 
-    private function isProtectedRoute(string $uri): bool
+    private function group(array $options, callable $callback): void
     {
-        $protectedRoutes = ['/api/v1/@me'];
+        // Extract middleware from group options
+        $middlewares = $options['middleware'] ?? [];
 
-        return in_array($uri, $protectedRoutes, true);
+        // Temporarily register routes with middleware
+        $callback(new class($this, $middlewares) {
+            private Router $router;
+            private array $middlewares;
+
+            public function __construct(Router $router, array $middlewares)
+            {
+                $this->router = $router;
+                $this->middlewares = $middlewares;
+            }
+
+            public function addRoute(RouteCollector $routeCollector, array $methods, string $route, array $handler): void
+            {
+                // Add route to the collector
+                $routeCollector->addRoute($methods, $route, $handler);
+
+                // Serialize the handler to use as a unique key
+                $handlerKey = serialize($handler);
+
+                // Map middleware to the route handler
+                $this->router->mapMiddleware($handlerKey, $this->middlewares);
+            }
+        });
+    }
+
+    private function applyMiddleware(array $middlewares): void
+    {
+        foreach ($middlewares as $middleware) {
+            $middlewareInstance = $this->resolveMiddleware($middleware);
+            $middlewareInstance->handle();
+        }
+    }
+
+    private function resolveMiddleware(string $middleware)
+    {
+        // Instantiate middleware dynamically
+        return match ($middleware) {
+            'auth' => new AuthMiddleware(),
+            default => throw new \Exception("Middleware [$middleware] not found"),
+        };
+    }
+
+    public function mapMiddleware(string $handlerKey, array $middlewares): void
+    {
+        $this->routeMiddleware[$handlerKey] = $middlewares;
     }
 
     /**
