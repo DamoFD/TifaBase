@@ -143,7 +143,24 @@ class UserController
             'status' => 'success',
             'code' => 200,
             'message' => 'User logged in successfully.',
-            'token' => $authenticated['token'],
+        ]);
+    }
+
+    /**
+    * Logout the authenticated user
+    *
+    * @return void
+    *
+    * @since 0.0.1
+    */
+    public function logout(): void
+    {
+        setcookie('token', '', time() - 3600, '/');
+
+        echo json_encode([
+            'status' => 'success',
+            'code' => 200,
+            'message' => 'User logged out successfully.',
         ]);
     }
 

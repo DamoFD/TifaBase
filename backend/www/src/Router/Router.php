@@ -58,11 +58,13 @@ class Router
     */
     public function registerRoutes(RouteCollector $router): void
     {
+        // Register routes here
         $router->addRoute(['POST'], '/api/v1/login', [UserController::class, 'login']);
         $router->addRoute(['POST'], '/api/v1/register', [UserController::class, 'register']);
 
         $this->group($router, ['middleware' => ['auth']], function (RouteGroup $group) {
             $group->addRoute(['GET'], '/api/v1/@me', [UserController::class, 'me']);
+            $group->addRoute(['POST'], '/api/v1/logout', [UserController::class, 'logout']);
         });
     }
 
