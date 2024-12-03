@@ -1,9 +1,17 @@
 import AppRoutes from '@/router'
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { AuthProvider } from './contexts/UserContext';
+
+const queryClient = new QueryClient();
 
 function App() {
 
     return (
-        <AppRoutes />
+        <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+                <AppRoutes />
+            </AuthProvider>
+        </QueryClientProvider>
     )
 }
 
