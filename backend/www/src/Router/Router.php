@@ -3,6 +3,7 @@
 namespace TifaBase\Router;
 
 use TifaBase\Controllers\UserController;
+use TifaBase\Middleware\AuthMiddleware;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
 use function FastRoute\simpleDispatcher;
@@ -49,6 +50,7 @@ class Router
     {
         $router->addRoute(['POST'], '/api/v1/login', [UserController::class, 'login']);
         $router->addRoute(['POST'], '/api/v1/register', [UserController::class, 'register']);
+        $router->addRoute(['GET'], '/api/v1/@me', [UserController::class, 'me']);
     }
 
     /**
@@ -78,9 +80,23 @@ class Router
             case DISPATCHER::FOUND:
                 [$controller, $method] = $routeInfo[1];
                 $parameters = $routeInfo[2];
+
+                // Apply authentication middleware for protected routes
+                if ($this->isProtectedRoute($uri)) {
+                    $authMiddleware = new AuthMiddleware();
+                    $authMiddleware->handle();
+                }
+
                 $this->handleRequest(new $controller(), $method, $parameters);
                 break;
         }
+    }
+
+    private function isProtectedRoute(string $uri): bool
+    {
+        $protectedRoutes = ['/api/v1/@me'];
+
+        return in_array($uri, $protectedRoutes, true);
     }
 
     /**

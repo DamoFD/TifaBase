@@ -124,12 +124,37 @@ class UserController
             return;
         }
 
+        // Set Cookie
+        setcookie(
+            'token',
+            $authenticated['token'],
+            [
+                'expires' => time() + 3600, // 1 hour
+                'path' => '/',
+                'domain' => 'localhost',
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'strict',
+            ]
+        );
+
         // Return token if successful
         echo json_encode([
             'status' => 'success',
             'code' => 200,
             'message' => 'User logged in successfully.',
             'token' => $authenticated['token'],
+        ]);
+    }
+
+    public function me(): void
+    {
+        $user = $this->user->getAuthUser();
+
+        echo json_encode([
+            'status' => 'success',
+            'code' => 200,
+            'user' => $user['user'],
         ]);
     }
 }

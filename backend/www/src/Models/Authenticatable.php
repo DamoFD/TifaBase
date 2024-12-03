@@ -38,4 +38,9 @@ class Authenticatable
             throw new \Exception('Invalid token: ' . $e->getMessage());
         }
     }
+
+    public function getToken(): string
+    {
+        return $_COOKIE['token'] ?? '';
+    }
 }

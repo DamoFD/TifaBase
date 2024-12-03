@@ -86,4 +86,10 @@ class User extends Authenticatable
 
         return ['success' => true, 'token' => $token];
     }
+
+    public function getAuthUser(): array
+    {
+        $payload = $this->validateToken($this->getToken());
+        return ['success' => true, 'user' => $payload];
+    }
 }
