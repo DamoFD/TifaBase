@@ -147,6 +147,13 @@ class UserController
         ]);
     }
 
+    /**
+    * Returns auth user data
+    *
+    * @return void
+    *
+    * @since 0.0.1
+    */
     public function me(): void
     {
         $user = $this->user->getAuthUser();

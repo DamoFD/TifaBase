@@ -3,7 +3,6 @@
 namespace TifaBase\Router;
 
 use TifaBase\Controllers\UserController;
-use TifaBase\Middleware\AuthMiddleware;
 use FastRoute\RouteCollector;
 use FastRoute\Dispatcher;
 use function FastRoute\simpleDispatcher;
@@ -23,7 +22,15 @@ class Router
     * @since 0.0.1
     */
     private Dispatcher $dispatcher;
-    private array $routeMiddleware = [];
+
+    /**
+    * Middleware manager
+    *
+    * @var MiddlewareManager
+    *
+    * @since 0.0.1
+    */
+    private MiddlewareManager $middlewareManager;
 
     /**
     * Router constructor
@@ -32,6 +39,8 @@ class Router
     */
     public function __construct()
     {
+        $this->middlewareManager = new MiddlewareManager();
+
         // Create the FastRoute dispatcher
         $this->dispatcher = simpleDispatcher(function (RouteCollector $router) {
             $this->registerRoutes($router);
@@ -52,8 +61,8 @@ class Router
         $router->addRoute(['POST'], '/api/v1/login', [UserController::class, 'login']);
         $router->addRoute(['POST'], '/api/v1/register', [UserController::class, 'register']);
 
-        $this->group(['middleware' => ['auth']], function ($groupRouter) use ($router) {
-            $groupRouter->addRoute($router, ['GET'], '/api/v1/@me', [UserController::class, 'me']);
+        $this->group($router, ['middleware' => ['auth']], function (RouteGroup $group) {
+            $group->addRoute(['GET'], '/api/v1/@me', [UserController::class, 'me']);
         });
     }
 
@@ -85,68 +94,30 @@ class Router
                 [$controller, $method] = $routeInfo[1];
                 $parameters = $routeInfo[2];
 
-                // Serialize the handler to match the stored key
+                // Apply middleware for the route
                 $handlerKey = serialize($routeInfo[1]);
-
-                // Apply authentication middleware for protected routes
-                $middlewares = $this->routeMiddleware[$handlerKey] ?? [];
-                $this->applyMiddleware($middlewares);
+                $this->middlewareManager->applyMiddleware($handlerKey);
 
                 $this->handleRequest(new $controller(), $method, $parameters);
                 break;
         }
     }
 
-    private function group(array $options, callable $callback): void
+    /**
+    * Group routes
+    *
+    * @param RouteCollector $router
+    * @param array $options
+    * @param callable $callback
+    *
+    * @return void
+    *
+    * @since 0.0.1
+    */
+    private function group(RouteCollector $router, array $options, callable $callback): void
     {
-        // Extract middleware from group options
         $middlewares = $options['middleware'] ?? [];
-
-        // Temporarily register routes with middleware
-        $callback(new class($this, $middlewares) {
-            private Router $router;
-            private array $middlewares;
-
-            public function __construct(Router $router, array $middlewares)
-            {
-                $this->router = $router;
-                $this->middlewares = $middlewares;
-            }
-
-            public function addRoute(RouteCollector $routeCollector, array $methods, string $route, array $handler): void
-            {
-                // Add route to the collector
-                $routeCollector->addRoute($methods, $route, $handler);
-
-                // Serialize the handler to use as a unique key
-                $handlerKey = serialize($handler);
-
-                // Map middleware to the route handler
-                $this->router->mapMiddleware($handlerKey, $this->middlewares);
-            }
-        });
-    }
-
-    private function applyMiddleware(array $middlewares): void
-    {
-        foreach ($middlewares as $middleware) {
-            $middlewareInstance = $this->resolveMiddleware($middleware);
-            $middlewareInstance->handle();
-        }
-    }
-
-    private function resolveMiddleware(string $middleware)
-    {
-        // Instantiate middleware dynamically
-        return match ($middleware) {
-            'auth' => new AuthMiddleware(),
-            default => throw new \Exception("Middleware [$middleware] not found"),
-        };
-    }
-
-    public function mapMiddleware(string $handlerKey, array $middlewares): void
-    {
-        $this->routeMiddleware[$handlerKey] = $middlewares;
+        $callback(new RouteGroup($router, $this->middlewareManager, $middlewares));
     }
 
     /**
