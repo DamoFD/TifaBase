@@ -5,6 +5,10 @@ namespace TifaBase\Controllers;
 use TifaBase\Models\User;
 use TifaBase\Requests\LoginUserRequest;
 use TifaBase\Requests\RegisterUserRequest;
+use TifaBase\Responses\LoginUserResponse;
+use TifaBase\Responses\LogoutUserResponse;
+use TifaBase\Responses\RegisterUserResponse;
+use TifaBase\Responses\UserResponse;
 
 /**
 * User Controller connects request to the models
@@ -45,38 +49,24 @@ class UserController
 
         // Validate the request
         if (!$request->validate()) {
-            http_response_code(422);
-
-            echo json_encode([
-                'status' => 'error',
-                'code' => 422,
-                'message' => 'Validation failed.',
-                'errors' => $request->errors(),
-            ]);
-
+            RegisterUserResponse::validationFailed($request->errors());
             return;
         }
 
+        // Temporary
         $requestData['role'] = 'user';
 
+        // Register the user if validation passes
         $result = $this->user->register($requestData);
 
-        // Fail if bad credentials
+        // Fail if email is taken
         if (!$result['success']) {
-            http_response_code(400);
-            echo json_encode([
-                'status' => 'error',
-                'code' => 400,
-                'message' => $result['message'],
-            ]);
-
+            RegisterUserResponse::userAlreadyExists();
             return;
         }
 
         // Login if successful
         $this->login($requestData);
-
-        return;
     }
 
     /**
@@ -96,15 +86,7 @@ class UserController
 
         // Validate the request
         if (!$request->validate()) {
-            http_response_code(422);
-
-            echo json_encode([
-                'status' => 'error',
-                'code' => 422,
-                'message' => 'Validation failed.',
-                'errors' => $request->errors(),
-            ]);
-
+            LoginUserResponse::validationFailed($request->errors());
             return;
         }
 
@@ -114,13 +96,7 @@ class UserController
 
         // Fail if bad credentials
         if (!$authenticated['success']) {
-            http_response_code(401);
-            echo json_encode([
-                'status' => 'error',
-                'code' => 401,
-                'message' => $authenticated['message'],
-            ]);
-
+            LoginUserResponse::invalidCredentials();
             return;
         }
 
@@ -138,12 +114,8 @@ class UserController
             ]
         );
 
-        // Return token if successful
-        echo json_encode([
-            'status' => 'success',
-            'code' => 200,
-            'message' => 'User logged in successfully.',
-        ]);
+        // Return success
+        LoginUserResponse::success();
     }
 
     /**
@@ -157,11 +129,7 @@ class UserController
     {
         setcookie('token', '', time() - 3600, '/');
 
-        echo json_encode([
-            'status' => 'success',
-            'code' => 200,
-            'message' => 'User logged out successfully.',
-        ]);
+        LogoutUserResponse::success();
     }
 
     /**
@@ -175,10 +143,6 @@ class UserController
     {
         $user = $this->user->getAuthUser();
 
-        echo json_encode([
-            'status' => 'success',
-            'code' => 200,
-            'user' => $user['user'],
-        ]);
+        UserResponse::me($user['user']);
     }
 }
