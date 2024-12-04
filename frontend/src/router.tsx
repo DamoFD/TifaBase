@@ -1,8 +1,11 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom"
 import AdminLogin from "@/pages/AdminLogin";
 import AdminRegister from "@/pages/AdminRegister";
-import Dashboard from "@/pages/Dashboard";
+import Collections from "@/pages/Collections";
+import Logs from "@/pages/Logs";
+import Settings from "@/pages/Settings";
 import { useAuth } from "@/contexts/UserContext";
+import MainLayout from "@/layouts/MainLayout";
 
 interface RouteProps {
     element: JSX.Element;
@@ -40,7 +43,11 @@ const AppRoutes: React.FC = () => {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<ProtectedRoute element={<Dashboard />} />} />
+                <Route path="/" element={<ProtectedRoute element={<MainLayout />} />}>
+                    <Route path="/" element={<Collections />} />
+                    <Route path="/logs" element={<Logs />} />
+                    <Route path="/settings" element={<Settings />} />
+                </Route>
                 <Route path="/login" element={<GuestRoute element={<AdminLogin />} />} />
                 <Route path="/register" element={<GuestRoute element={<AdminRegister />} />} />
             </Routes>

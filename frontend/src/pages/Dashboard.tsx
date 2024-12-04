@@ -1,12 +1,11 @@
 import { useLogout } from "../hooks/useUser";
-import Button from '../components/Button';
 import { useAuth } from '../contexts/UserContext';
 
 const Dashboard = () => {
 
     const mutation = useLogout();
 
-    const { getUser, user } = useAuth();
+    const { getUser } = useAuth();
 
     const handleLogout = () => {
         mutation.mutate(undefined, {
@@ -22,8 +21,6 @@ const Dashboard = () => {
     return (
         <div>
             <h1>Dashboard</h1>
-            <p>hello {user?.email}</p>
-            <Button text="logout" onClick={handleLogout} isLoading={mutation.isLoading} />
         </div>
     );
 }
