@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LuFolderClosed, LuTableProperties, LuUsersRound } from "react-icons/lu";
+import CollectionTabs from "@/components/CollectionTabs";
 
 const CollectionForm: React.FC = () => {
 
@@ -49,57 +50,69 @@ const CollectionForm: React.FC = () => {
 
     return (
         <Form {...form}>
-            <form className="space-y-4 mt-4">
-                <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel htmlFor="name">Name<span className="text-red-500">*</span></FormLabel>
-                            <FormControl>
-                                <Input id="name" placeholder='eg. "posts"' {...field} autoComplete="name" />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel htmlFor="type">Type<span className="text-red-500">*</span></FormLabel>
-                            <FormControl>
-                                <Select onValueChange={field.onChange} value={field.value}>
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="base">
-                                            <div className="flex items-center space-x-1 text-gray-800">
-                                                <LuFolderClosed />
-                                                <p>Base Collection</p>
-                                            </div>
-                                        </SelectItem>
-                                        <SelectItem value="view">
-                                            <div className="flex items-center space-x-1 text-gray-800">
-                                                <LuTableProperties />
-                                                <p>View Collection</p>
-                                            </div>
-                                        </SelectItem>
-                                        <SelectItem value="auth">
-                                            <div className="flex items-center space-x-1 text-gray-800">
-                                                <LuUsersRound />
-                                                <p>Auth Collection</p>
-                                            </div>
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+            <form className="mt-4 flex flex-col justify-between h-full">
+                <div className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor="name">Name<span className="text-red-500">*</span></FormLabel>
+                                <FormControl>
+                                    <Input id="name" placeholder='eg. "posts"' {...field} autoComplete="name" />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="type"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor="type">Type<span className="text-red-500">*</span></FormLabel>
+                                <FormControl>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="base">
+                                                <div className="flex items-center space-x-1 text-gray-800">
+                                                    <LuFolderClosed />
+                                                    <p>Base Collection</p>
+                                                </div>
+                                            </SelectItem>
+                                            <SelectItem value="view">
+                                                <div className="flex items-center space-x-1 text-gray-800">
+                                                    <LuTableProperties />
+                                                    <p>View Collection</p>
+                                                </div>
+                                            </SelectItem>
+                                            <SelectItem value="auth">
+                                                <div className="flex items-center space-x-1 text-gray-800">
+                                                    <LuUsersRound />
+                                                    <p>Auth Collection</p>
+                                                </div>
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <CollectionTabs />
+                </div>
+                <div className="mb-10">
+                    <hr className="w-full" />
+                    <div className="flex justify-end w-full mt-4">
+                        <div className="flex space-x-2 items-center">
+                            <p className="text-gray-800 text-sm cursor-pointer hover:bg-gray-200 px-4 py-2 rounded">Cancel</p>
+                            <Button type="submit" text="Create" />
+                        </div>
+                    </div>
+                </div>
             </form>
         </Form>
     );
